@@ -1,0 +1,209 @@
+/* Post card: tags, status pill, actions */
+
+.post-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.eyebrow,
+.summary-label,
+.post-number {
+  color: var(--coral);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.post-card {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 205px;
+  padding: 24px;
+  background: var(--paper);
+  border: 1px solid rgba(191, 91, 72, 0.18);
+  border-radius: 14px;
+  box-shadow: 0 5px 16px rgba(46, 42, 38, 0.05);
+  transition:
+    border-color 180ms ease,
+    transform 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.post-card::before {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 4px;
+  background: var(--coral);
+  content: '';
+}
+
+.post-card:hover {
+  border-color: var(--coral);
+  box-shadow: 0 12px 28px rgba(46, 42, 38, 0.07);
+  transform: translateY(-2px);
+}
+
+.post-card h2 {
+  margin: 28px 0 10px;
+  font:
+    500 1.22rem/1.2 'Playfair Display',
+    Georgia,
+    serif;
+  text-transform: capitalize;
+}
+
+.post-card > p {
+  max-width: 46ch;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.65;
+}
+
+.post-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 18px;
+  color: var(--muted);
+  font-size: 0.74rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.post-meta time {
+  color: var(--muted);
+}
+
+.tag-list {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  min-width: 120px;
+  padding: 12px 14px;
+  border: 1px solid rgba(112, 144, 191, 0.7);
+  border-radius: 10px;
+  background: rgba(247, 249, 251, 0.9);
+}
+
+.tag {
+  display: block;
+  color: var(--ink);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 78px;
+  min-height: 28px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.status-pill.published,
+.status-pill.active,
+.status-pill.success {
+  background: rgba(44, 124, 86, 0.1);
+  color: #1f6e4d;
+}
+
+.status-pill.draft,
+.status-pill.pending {
+  background: rgba(191, 91, 72, 0.08);
+  color: var(--coral);
+}
+
+.status-pill.archived {
+  background: rgba(86, 92, 128, 0.1);
+  color: #4b557f;
+}
+
+.delete-button {
+  min-height: 34px;
+  padding: 7px 13px;
+  border: 1px solid rgba(191, 91, 72, 0.3);
+  border-radius: 999px;
+  color: var(--coral);
+  background: #fff1ed;
+  font:
+    600 0.72rem 'DM Sans',
+    sans-serif;
+  cursor: pointer;
+  transition:
+    color 180ms ease,
+    border-color 180ms ease,
+    background 180ms ease;
+}
+
+.delete-button:focus-visible,
+.page-button:focus-visible {
+  outline: 2px solid var(--coral);
+  outline-offset: 3px;
+}
+
+@media (max-width: 700px) {
+  .post-card {
+    min-height: 180px;
+  }
+}
+
+.card-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 16px;
+}
+
+.card-button {
+  min-height: 34px;
+  padding: 7px 15px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  background: transparent;
+  font:
+    600 0.72rem 'DM Sans',
+    sans-serif;
+  cursor: pointer;
+  transition:
+    color 180ms ease,
+    border-color 180ms ease,
+    background 180ms ease;
+}
+
+.card-button:hover {
+  color: var(--ink);
+  border-color: var(--faint);
+  background: rgba(46, 42, 38, 0.03);
+}
+
+.card-button.danger {
+  color: var(--coral);
+  border-color: rgba(191, 91, 72, 0.3);
+}
+
+.card-button.danger:hover {
+  background: #fff1ed;
+  border-color: var(--coral);
+}
+
+.card-button:focus-visible {
+  outline: 2px solid var(--coral);
+  outline-offset: 3px;
+}

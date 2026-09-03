@@ -1,8 +1,10 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { authHeaders, BASE_URL } from './api'
+import { useState, useEffect } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+import { BASE_URL, authHeaders } from '../api'
 
-const CreatePostForm = () => {
+const EditPost = () => {
+  const { id } = useParams()
+
   const [formData, setFormData] = useState({
     title: '',
     body: '',
@@ -13,6 +15,28 @@ const CreatePostForm = () => {
   const navigate = useNavigate()
 
   const [error, setError] = useState()
+
+  // Fetch existing post
+  useEffect(() => {
+    const fetchPost = async () => {
+      try {
+        const response = await fetch(`${BASE_URL}/posts/${id}/`)
+
+        const data = await response.json()
+
+        setFormData({
+          title: data.title,
+          body: data.body,
+          status: data.status,
+          categories: data.categories,
+        })
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+    fetchPost()
+  }, [id])
 
   const handleChange = (event) => {
     const { name, value } = event.target
@@ -25,44 +49,34 @@ const CreatePostForm = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault()
-    // console.log('submit')
+
     try {
-      const response = await fetch(`${BASE_URL}/posts/`, {
-        method: 'POST',
+      const response = await fetch(`${BASE_URL}/posts/${id}/`, {
+        method: 'PUT',
         headers: authHeaders(),
         body: JSON.stringify(formData),
       })
 
       const data = await response.json()
-      console.log('create', data)
+
+      console.log('updated', data)
 
       if (!response.ok) {
         setError('Fill the details')
         return
       }
 
-      //   setPostsData((prev) => [...prev, data])
-      navigate(-1)
-
-      setFormData({
-        title: '',
-        body: '',
-        status: 'draft',
-        categories: [1],
-      })
+      navigate('/')
     } catch (error) {
       console.log(error)
     }
   }
 
   const handleCategoryChange = (event) => {
-    // console.log('category change')
     const selectedCategory = Number(event.target.value)
-    // console.log(selectedCategory)
 
     setFormData((prev) => {
       let categories = [...prev.categories]
-      console.log('prev', categories)
 
       if (categories.includes(selectedCategory)) {
         categories = categories.filter((item) => item !== selectedCategory)
@@ -85,12 +99,13 @@ const CreatePostForm = () => {
     <section className="form-shell">
       <form className="create-post-form" onSubmit={handleSubmit}>
         <div className="form-header">
-          <p className="eyebrow">New post</p>
-          <h2>Create a post</h2>
+          <p className="eyebrow">Edit post</p>
+          <h2>Update a post</h2>
         </div>
 
         <div className="field-group">
           <label className="field-label">Title</label>
+
           <input
             className="text-input"
             type="text"
@@ -102,6 +117,7 @@ const CreatePostForm = () => {
 
         <div className="field-group">
           <label className="field-label">Body</label>
+
           <textarea
             className="text-area"
             name="body"
@@ -112,6 +128,7 @@ const CreatePostForm = () => {
 
         <div className="field-group">
           <label className="field-label">Status</label>
+
           <select
             className="select-input"
             name="status"
@@ -169,12 +186,13 @@ const CreatePostForm = () => {
           </div>
         </div>
 
-        {error && <h1 className="form-error">{error}</h1>}
+        {error && <p className="form-error">{error}</p>}
 
         <div className="form-actions">
           <button className="primary-button" type="submit">
-            Create Post
+            Confirm
           </button>
+
           <button className="secondary-button" type="button" onClick={handleBack}>
             Back
           </button>
@@ -184,4 +202,4 @@ const CreatePostForm = () => {
   )
 }
 
-export default CreatePostForm
+export default EditPost

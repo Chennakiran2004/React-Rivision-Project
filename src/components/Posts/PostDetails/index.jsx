@@ -1,7 +1,8 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import { useParams } from 'react-router-dom'
 import { useState, useEffect } from 'react'
-import { BASE_URL } from './api'
+import { BASE_URL, authHeaders } from '../api'
+import './index.css'
 
 const PostDetails = () => {
   const { id } = useParams()
@@ -9,7 +10,9 @@ const PostDetails = () => {
 
   const fetchDetails = async () => {
     try {
-      const response = await fetch(`${BASE_URL}/posts/${id}/`)
+      const response = await fetch(`${BASE_URL}/posts/${id}/`, {
+        headers: authHeaders(),
+      })
       const data = await response.json()
       console.log(data)
       setPostData(data)
@@ -23,7 +26,11 @@ const PostDetails = () => {
   }, [id])
 
   if (!post) {
-    return <p>Loading...</p>
+    return (
+      <main className="detail-page">
+        <p className="empty-state">Loading...</p>
+      </main>
+    )
   }
 
   console.log(post)

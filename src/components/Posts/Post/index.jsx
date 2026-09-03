@@ -1,9 +1,11 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import { useEffect, useState } from 'react'
-import PostCard from './card'
-// import CreatePostForm from './createPost'
+import PostCard from '../Card'
+import '../index.css'
+// import CreatePostForm from './CreatePost'
+import Pagination from '../../Pagination'
 
-import { BASE_URL, authHeaders, logout } from './api'
+import { BASE_URL, authHeaders, logout } from '../api'
 
 import { useNavigate } from 'react-router-dom'
 
@@ -14,11 +16,16 @@ const VIEW_STATUS = {
   EMPTY: 'EMPTY',
 }
 
+const PAGE_SIZE = 10
+
 const Posts = () => {
   const [postsData, setPostsData] = useState([])
   const [status, setStatus] = useState(VIEW_STATUS.LOADING)
   const [error, setError] = useState('')
   const [searchValue, setSearchValue] = useState('')
+
+  const [page, setPage] = useState(1)
+  const [totalCount, setTotalCount] = useState(0)
 
   const navigate = useNavigate()
 
@@ -28,22 +35,30 @@ const Posts = () => {
       setError('')
 
       // const response = await fetch('http://127.0.0.1:8000/api/posts/')
-      let url = searchValue
+      let url = `${BASE_URL}/posts/?page=${page}`
 
       if (searchValue) {
-        url = `${BASE_URL}/posts/?search=${searchValue}`
-      } else {
-        url = `${BASE_URL}/posts/`
+        url += `&search=${searchValue}`
       }
 
-      const response = await fetch(url)
+      // if (searchValue) {
+      //   url = `${BASE_URL}/posts/?search=${searchValue}`
+      // } else {
+      //   url = `${BASE_URL}/posts/`
+      // }
+
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: authHeaders(),
+      })
 
       if (!response.ok) {
         throw new Error('Failed to fetch posts')
       }
 
       const data = await response.json()
-      setPostsData(data)
+      setPostsData(data.results)
+      setTotalCount(data.count)
 
       if (data.length === 0) {
         setStatus(VIEW_STATUS.EMPTY)
@@ -63,7 +78,7 @@ const Posts = () => {
     }, 500)
 
     return () => clearTimeout(debounce)
-  }, [searchValue])
+  }, [searchValue, page])
 
   const renderLoadingView = () => <p className="empty-state">Loading your posts...</p>
 
@@ -105,6 +120,18 @@ const Posts = () => {
   }
 
   const totalPosts = Array.isArray(postsData) ? postsData.length : 0
+
+  const handleClickNext = () => {
+    if (page * PAGE_SIZE < totalCount) {
+      setPage((prevPage) => prevPage + 1)
+    }
+  }
+
+  const handleClickPrev = () => {
+    if (page > 1) {
+      setPage((prevPage) => prevPage - 1)
+    }
+  }
 
   return (
     <main className="dashboard">
@@ -150,6 +177,15 @@ const Posts = () => {
       </div>
       <section className="post-grid" aria-label="Posts">
         {renderGrid()}
+
+        {totalPosts > 1 && (
+          <Pagination
+            currentPage={page}
+            totalPages={totalPosts}
+            handleClickNext={handleClickNext}
+            handleClickPrev={handleClickPrev}
+          />
+        )}
       </section>
     </main>
   )

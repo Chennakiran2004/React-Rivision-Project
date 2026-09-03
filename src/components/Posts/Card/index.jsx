@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 // import { useState } from 'react'
-import { BASE_URL } from './api'
+import { BASE_URL } from '../api'
+import './index.css'
 
 const formatDate = (value) => {
   if (!value) return 'Recently'
@@ -13,13 +14,6 @@ const formatDate = (value) => {
     day: 'numeric',
     year: 'numeric',
   }).format(date)
-}
-
-const categoryLabels = {
-  1: 'Django',
-  2: 'Python',
-  3: 'DevOps',
-  4: 'SQL',
 }
 
 const formatStatus = (status) => {
@@ -67,9 +61,9 @@ const PostCard = ({ post, setPostsData }) => {
       <div className="post-meta">
         <time dateTime={post.created_at}>{formatDate(post.created_at)}</time>
         <div className="tag-list" aria-label="Post categories">
-          {(post.categories ?? []).map((categoryId) => (
-            <span key={`${post.id}-${categoryId}`} className="tag">
-              {categoryLabels[categoryId] ?? `Category ${categoryId}`}
+          {(post.categories ?? []).map((category) => (
+            <span key={`${post.id}-${category}`} className="tag">
+              {category}
             </span>
           ))}
         </div>
@@ -77,20 +71,22 @@ const PostCard = ({ post, setPostsData }) => {
 
       <h2>{post.title}</h2>
       <p>{post.body}</p>
-      <button
-        className="delete-button"
-        type="button"
-        onClick={(event) => handleDelete(event, post.id)}
-      >
-        Delete
-      </button>
-      <button
-        className="delete-button"
-        type="button"
-        onClick={(event) => handleEdit(event, post.id)}
-      >
-        Edit
-      </button>
+      <div className="card-actions">
+        <button
+          className="card-button"
+          type="button"
+          onClick={(event) => handleEdit(event, post.id)}
+        >
+          Edit
+        </button>
+        <button
+          className="card-button danger"
+          type="button"
+          onClick={(event) => handleDelete(event, post.id)}
+        >
+          Delete
+        </button>
+      </div>
     </article>
   )
 }

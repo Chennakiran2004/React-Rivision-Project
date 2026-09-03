@@ -1,45 +1,46 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { BASE_URL } from './api'
+import { BASE_URL, authHeaders } from '../api'
 
-const Register = () => {
+const Login = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
-  const [email, setEmail] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const navigate = useNavigate()
 
-  const handleRegister = async (event) => {
+  const handleLogin = async (event) => {
     event.preventDefault()
+    setError('')
+    setIsSubmitting(true)
 
-    const registerData = {
+    const loginData = {
       username: username,
       password: password,
-      email: email,
     }
 
     try {
-      const response = await fetch(`${BASE_URL}/register/`, {
+      const response = await fetch(`${BASE_URL}/token/`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(registerData),
+        headers: authHeaders(),
+        body: JSON.stringify(loginData),
       })
 
       if (!response.ok) {
-        setError('Registration failed. Please try again.')
+        setError('Those credentials did not match. Please try again.')
         return
       }
 
       const data = await response.json()
       localStorage.setItem('access', data.access)
       localStorage.setItem('refresh', data.refresh)
-      navigate('/')
-    } catch (error) {
-      console.error('Error during registration:', error)
-      setError('An error occurred during registration. Please try again later.')
+      navigate('/', { replace: true })
+    } catch (loginError) {
+      console.error('Error during login:', loginError)
+      setError('Could not reach the server. Please try again later.')
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -47,12 +48,12 @@ const Register = () => {
     <main className="auth-page">
       <section className="auth-card">
         <header className="auth-header">
-          <p className="eyebrow">Get started</p>
-          <h2>Create account.</h2>
-          <p className="auth-subtitle">A quiet place to keep every note you write.</p>
+          <p className="eyebrow">Welcome back</p>
+          <h2>Sign in.</h2>
+          <p className="auth-subtitle">Your collection is waiting where you left it.</p>
         </header>
 
-        <form className="auth-form" onSubmit={(event) => handleRegister(event)}>
+        <form className="auth-form" onSubmit={handleLogin}>
           <div className="field-group">
             <label className="field-label" htmlFor="username">
               Username
@@ -69,21 +70,6 @@ const Register = () => {
           </div>
 
           <div className="field-group">
-            <label className="field-label" htmlFor="email">
-              Email
-            </label>
-            <input
-              className="text-input"
-              type="email"
-              id="email"
-              name="email"
-              autoComplete="email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-            />
-          </div>
-
-          <div className="field-group">
             <label className="field-label" htmlFor="password">
               Password
             </label>
@@ -92,7 +78,7 @@ const Register = () => {
               type="password"
               id="password"
               name="password"
-              autoComplete="new-password"
+              autoComplete="current-password"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
             />
@@ -100,17 +86,17 @@ const Register = () => {
 
           {error && <p className="form-error">{error}</p>}
 
-          <button className="primary-button auth-submit" type="submit">
-            Create account
+          <button className="primary-button auth-submit" type="submit" disabled={isSubmitting}>
+            {isSubmitting ? 'Signing in...' : 'Sign in'}
           </button>
         </form>
 
         <p className="auth-footer">
-          Already have an account? <Link to="/login">Sign in</Link>
+          New here? <Link to="/register">Create an account</Link>
         </p>
       </section>
     </main>
   )
 }
 
-export default Register
+export default Login

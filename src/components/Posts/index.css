@@ -1,0 +1,131 @@
+/* Posts dashboard: header, summary, toolbar, grid */
+
+.dashboard {
+  width: min(1120px, 100%);
+  margin: 0 auto;
+  padding: 54px 64px 36px;
+}
+
+.eyebrow {
+  margin-bottom: 14px;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding-bottom: 42px;
+  border-bottom: 1px solid var(--line);
+}
+
+.eyebrow,
+.summary-label,
+.post-number {
+  color: var(--coral);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.page-header h1 {
+  margin: 0;
+  max-width: 620px;
+}
+
+.subtitle {
+  margin: 14px 0 0;
+  color: var(--muted);
+  font-size: 1rem;
+}
+
+.header-mark {
+  color: var(--coral);
+  font:
+    600 1.1rem/1 'DM Sans',
+    sans-serif;
+  letter-spacing: 0.08em;
+}
+
+.summary {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.4fr;
+  gap: 24px;
+  align-items: end;
+  padding: 26px 0 32px;
+}
+
+.summary > div:not(.summary-note) {
+  display: grid;
+  gap: 7px;
+}
+
+.summary strong {
+  color: var(--ink);
+  font:
+    500 1.55rem/1 'DM Sans',
+    sans-serif;
+}
+
+.summary-note {
+  color: var(--muted);
+  font-size: 0.82rem;
+  text-align: right;
+}
+
+.post-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  min-height: 450px;
+}
+
+.empty-state {
+  grid-column: 1 / -1;
+  align-self: center;
+  color: var(--muted);
+  text-align: center;
+}
+
+@media (max-width: 700px) {
+  .dashboard {
+    padding: 36px 20px 28px;
+  }
+  .page-header {
+    padding-bottom: 30px;
+  }
+  .page-header h1 {
+    font-size: 2.55rem;
+  }
+  .summary {
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+  .summary-note {
+    grid-column: 1 / -1;
+    text-align: left;
+  }
+  .post-grid {
+    grid-template-columns: 1fr;
+    min-height: 420px;
+  }
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.toolbar {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 28px 0 8px;
+}
+
+.search-input {
+  flex: 1 1 260px;
+  min-width: 0;
+}
