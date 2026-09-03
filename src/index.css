@@ -1,0 +1,43 @@
+:root {
+  --canvas: #f4f0e9;
+  --paper: #fcfaf6;
+  --ink: #25231f;
+  --muted: #817b72;
+  --faint: #bcb5aa;
+  --line: #ddd6cb;
+  --coral: #bf5b48;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--ink);
+  background: var(--canvas);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}
+body {
+  min-width: 320px;
+  margin: 0;
+}
+#root {
+  min-height: 100svh;
+}
+h1,
+h2,
+p {
+  margin-top: 0;
+}
+h1 {
+  color: var(--ink);
+  font:
+    500 clamp(2.8rem, 6vw, 5.25rem)/0.95 'Playfair Display',
+    Georgia,
+    serif;
+  letter-spacing: -0.04em;
+}
+button:focus-visible {
+  outline: 2px solid var(--coral);
+  outline-offset: 4px;
+}
