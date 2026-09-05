@@ -1,94 +1,34 @@
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
+import { observer } from 'mobx-react-lite'
 import { useNavigate, useParams } from 'react-router-dom'
-import { BASE_URL, authHeaders } from '../api'
+import { useStore } from '../StoreProvide'
+import { CATEGORY_OPTIONS } from '../categories'
 
-const EditPost = () => {
+const EditPost = observer(() => {
   const { id } = useParams()
-
-  const [formData, setFormData] = useState({
-    title: '',
-    body: '',
-    status: 'draft',
-    categories: [1],
-  })
-
   const navigate = useNavigate()
+  const {
+    store: { editPostStore },
+  } = useStore()
 
-  const [error, setError] = useState()
+  const { formData, error, fetchPost, setField, toggleCategory, submit } = editPostStore
 
-  // Fetch existing post
   useEffect(() => {
-    const fetchPost = async () => {
-      try {
-        const response = await fetch(`${BASE_URL}/posts/${id}/`)
-
-        const data = await response.json()
-
-        setFormData({
-          title: data.title,
-          body: data.body,
-          status: data.status,
-          categories: data.categories,
-        })
-      } catch (error) {
-        console.log(error)
-      }
-    }
-
-    fetchPost()
-  }, [id])
+    fetchPost(id)
+  }, [id, fetchPost])
 
   const handleChange = (event) => {
     const { name, value } = event.target
-
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }))
+    setField(name, value)
   }
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = (event) => {
     event.preventDefault()
-
-    try {
-      const response = await fetch(`${BASE_URL}/posts/${id}/`, {
-        method: 'PUT',
-        headers: authHeaders(),
-        body: JSON.stringify(formData),
-      })
-
-      const data = await response.json()
-
-      console.log('updated', data)
-
-      if (!response.ok) {
-        setError('Fill the details')
-        return
-      }
-
-      navigate('/')
-    } catch (error) {
-      console.log(error)
-    }
+    submit(id, navigate)
   }
 
   const handleCategoryChange = (event) => {
-    const selectedCategory = Number(event.target.value)
-
-    setFormData((prev) => {
-      let categories = [...prev.categories]
-
-      if (categories.includes(selectedCategory)) {
-        categories = categories.filter((item) => item !== selectedCategory)
-      } else {
-        categories.push(selectedCategory)
-      }
-
-      return {
-        ...prev,
-        categories: categories,
-      }
-    })
+    toggleCategory(Number(event.target.value))
   }
 
   const handleBack = () => {
@@ -144,45 +84,17 @@ const EditPost = () => {
           <label className="field-label">Categories</label>
 
           <div className="categories-grid">
-            <label className="checkbox-item">
-              <input
-                type="checkbox"
-                value={1}
-                checked={formData.categories.includes(1)}
-                onChange={handleCategoryChange}
-              />
-              <span>Django</span>
-            </label>
-
-            <label className="checkbox-item">
-              <input
-                type="checkbox"
-                value={2}
-                checked={formData.categories.includes(2)}
-                onChange={handleCategoryChange}
-              />
-              <span>Python</span>
-            </label>
-
-            <label className="checkbox-item">
-              <input
-                type="checkbox"
-                value={3}
-                checked={formData.categories.includes(3)}
-                onChange={handleCategoryChange}
-              />
-              <span>DevOps</span>
-            </label>
-
-            <label className="checkbox-item">
-              <input
-                type="checkbox"
-                value={4}
-                checked={formData.categories.includes(4)}
-                onChange={handleCategoryChange}
-              />
-              <span>SQL</span>
-            </label>
+            {CATEGORY_OPTIONS.map((category, index) => (
+              <label key={index} className="checkbox-item">
+                <input
+                  type="checkbox"
+                  value={index + 1}
+                  checked={formData.categories.includes(index + 1)}
+                  onChange={handleCategoryChange}
+                />
+                <span>{category}</span>
+              </label>
+            ))}
           </div>
         </div>
 
@@ -200,6 +112,6 @@ const EditPost = () => {
       </form>
     </section>
   )
-}
+})
 
 export default EditPost

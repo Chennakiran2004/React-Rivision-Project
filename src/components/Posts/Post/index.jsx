@@ -1,84 +1,41 @@
-/* eslint-disable react-hooks/set-state-in-effect */
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import PostCard from '../Card'
 import '../index.css'
-// import CreatePostForm from './CreatePost'
 import Pagination from '../../Pagination'
+import { useStore } from '../StoreProvide'
+import { observer } from 'mobx-react-lite'
+import { VIEW_STATUS } from '../categories'
 
-import { BASE_URL, authHeaders, logout } from '../api'
+import { logout } from '../api'
 
 import { useNavigate } from 'react-router-dom'
 
-const VIEW_STATUS = {
-  LOADING: 'LOADING',
-  SUCCESS: 'SUCCESS',
-  FAILURE: 'FAILURE',
-  EMPTY: 'EMPTY',
-}
+const Posts = observer(() => {
+  const {
+    store: { postStore },
+  } = useStore()
 
-const PAGE_SIZE = 10
-
-const Posts = () => {
-  const [postsData, setPostsData] = useState([])
-  const [status, setStatus] = useState(VIEW_STATUS.LOADING)
-  const [error, setError] = useState('')
-  const [searchValue, setSearchValue] = useState('')
-
-  const [page, setPage] = useState(1)
-  const [totalCount, setTotalCount] = useState(0)
+  const {
+    postsData,
+    status,
+    setSearchValue,
+    goToNextPage,
+    goToPrevPage,
+    fetchPosts,
+    page,
+    searchValue,
+    error,
+  } = postStore
 
   const navigate = useNavigate()
 
-  const fetchData = async () => {
-    try {
-      setStatus(VIEW_STATUS.LOADING)
-      setError('')
-
-      // const response = await fetch('http://127.0.0.1:8000/api/posts/')
-      let url = `${BASE_URL}/posts/?page=${page}`
-
-      if (searchValue) {
-        url += `&search=${searchValue}`
-      }
-
-      // if (searchValue) {
-      //   url = `${BASE_URL}/posts/?search=${searchValue}`
-      // } else {
-      //   url = `${BASE_URL}/posts/`
-      // }
-
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: authHeaders(),
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch posts')
-      }
-
-      const data = await response.json()
-      setPostsData(data.results)
-      setTotalCount(data.count)
-
-      if (data.length === 0) {
-        setStatus(VIEW_STATUS.EMPTY)
-      } else {
-        setStatus(VIEW_STATUS.SUCCESS)
-      }
-    } catch (fetchError) {
-      console.error(fetchError)
-      setError('Unable to load posts right now.')
-      setStatus(VIEW_STATUS.FAILURE)
-    }
-  }
-
   useEffect(() => {
     const debounce = setTimeout(() => {
-      fetchData()
+      fetchPosts()
     }, 500)
 
     return () => clearTimeout(debounce)
-  }, [searchValue, page])
+  }, [searchValue, page, fetchPosts])
 
   const renderLoadingView = () => <p className="empty-state">Loading your posts...</p>
 
@@ -90,9 +47,7 @@ const Posts = () => {
 
   const renderSuccessView = () => {
     console.log(postsData)
-    return postsData?.map((post) => (
-      <PostCard key={post.id} post={post} setPostsData={setPostsData} />
-    ))
+    return postsData?.map((post) => <PostCard key={post.id} post={post} />)
   }
 
   const renderGrid = () => {
@@ -122,15 +77,11 @@ const Posts = () => {
   const totalPosts = Array.isArray(postsData) ? postsData.length : 0
 
   const handleClickNext = () => {
-    if (page * PAGE_SIZE < totalCount) {
-      setPage((prevPage) => prevPage + 1)
-    }
+    goToNextPage()
   }
 
   const handleClickPrev = () => {
-    if (page > 1) {
-      setPage((prevPage) => prevPage - 1)
-    }
+    goToPrevPage()
   }
 
   return (
@@ -189,6 +140,6 @@ const Posts = () => {
       </section>
     </main>
   )
-}
+})
 
 export default Posts

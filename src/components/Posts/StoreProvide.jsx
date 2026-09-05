@@ -17,7 +17,7 @@ const store = {
   postStore: new PostStore(),
 }
 
-export const StoreProvider = ({ children }) => {
+const StoreProvider = ({ children }) => {
   return <StoreContext.Provider value={{ store }}>{children}</StoreContext.Provider>
 }
 
@@ -25,3 +25,5 @@ export const StoreProvider = ({ children }) => {
 export const useStore = () => {
   return useContext(StoreContext)
 }
+
+export default StoreProvider

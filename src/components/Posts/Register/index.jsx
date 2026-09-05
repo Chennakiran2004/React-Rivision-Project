@@ -1,46 +1,30 @@
-import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { BASE_URL } from '../api'
+import { useStore } from '../StoreProvide'
+import { observer } from 'mobx-react-lite'
 
-const Register = () => {
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
-  const [email, setEmail] = useState('')
+const Register = observer(() => {
+  const {
+    store: { registerStore },
+  } = useStore()
+
+  const {
+    register,
+    error,
+    username,
+    password,
+    email,
+    setEmail,
+    setUsername,
+    setPassword,
+    isSubmitting,
+  } = registerStore
 
   const navigate = useNavigate()
 
   const handleRegister = async (event) => {
     event.preventDefault()
-
-    const registerData = {
-      username: username,
-      password: password,
-      email: email,
-    }
-
-    try {
-      const response = await fetch(`${BASE_URL}/register/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(registerData),
-      })
-
-      if (!response.ok) {
-        setError('Registration failed. Please try again.')
-        return
-      }
-
-      const data = await response.json()
-      localStorage.setItem('access', data.access)
-      localStorage.setItem('refresh', data.refresh)
-      navigate('/')
-    } catch (error) {
-      console.error('Error during registration:', error)
-      setError('An error occurred during registration. Please try again later.')
-    }
+    register()
+    navigate('/')
   }
 
   return (
@@ -100,8 +84,8 @@ const Register = () => {
 
           {error && <p className="form-error">{error}</p>}
 
-          <button className="primary-button auth-submit" type="submit">
-            Create account
+          <button className="primary-button auth-submit" type="submit" disabled={isSubmitting}>
+            {isSubmitting ? 'Creating...' : 'Create account'}
           </button>
         </form>
 
@@ -111,6 +95,6 @@ const Register = () => {
       </section>
     </main>
   )
-}
+})
 
 export default Register

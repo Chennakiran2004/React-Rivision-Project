@@ -1,81 +1,31 @@
-import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { authHeaders, BASE_URL } from '../api'
 import { CATEGORY_OPTIONS } from '../categories'
+import { useStore } from '../StoreProvide'
+import { observer } from 'mobx-react-lite'
 
-const CreatePostForm = () => {
-  const [formData, setFormData] = useState({
-    title: '',
-    body: '',
-    status: 'draft',
-    categories: [1],
-  })
+const CreatePostForm = observer(() => {
+  const {
+    store: { createPostStore },
+  } = useStore()
+
+  const { error, setField, submit, toggleCategory, formData } = createPostStore
 
   const navigate = useNavigate()
-
-  const [error, setError] = useState()
 
   const handleChange = (event) => {
     const { name, value } = event.target
 
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }))
+    setField(name, value)
   }
 
   const handleSubmit = async (event) => {
     event.preventDefault()
-    // console.log('submit')
-    try {
-      const response = await fetch(`${BASE_URL}/posts/`, {
-        method: 'POST',
-        headers: authHeaders(),
-        body: JSON.stringify(formData),
-      })
-
-      const data = await response.json()
-      console.log('create', data)
-
-      if (!response.ok) {
-        setError('Fill the details')
-        return
-      }
-
-      //   setPostsData((prev) => [...prev, data])
-      navigate(-1)
-
-      setFormData({
-        title: '',
-        body: '',
-        status: 'draft',
-        categories: [1],
-      })
-    } catch (error) {
-      console.log(error)
-    }
+    submit()
+    navigate('/')
   }
 
-  const handleCategoryChange = (event) => {
-    // console.log('category change')
-    const selectedCategory = event.target.value
-    // console.log(selectedCategory)
-
-    setFormData((prev) => {
-      let categories = [...prev.categories]
-      // console.log('prev', categories)
-
-      if (categories.includes(selectedCategory)) {
-        categories = categories.filter((item) => item !== selectedCategory)
-      } else {
-        categories.push(selectedCategory)
-      }
-
-      return {
-        ...prev,
-        categories: categories,
-      }
-    })
+  const handleCategoryChange = (categoryId) => {
+    toggleCategory(categoryId)
   }
 
   const handleBack = () => {
@@ -124,59 +74,13 @@ const CreatePostForm = () => {
           </select>
         </div>
 
-        {/* <div className="field-group">
-          <label className="field-label">Categories</label>
-
-          <div className="categories-grid">
-            <label className="checkbox-item">
-              <input
-                type="checkbox"
-                value={1}
-                checked={formData.categories.includes(1)}
-                onChange={handleCategoryChange}
-              />
-              <span>Django</span>
-            </label>
-
-            <label className="checkbox-item">
-              <input
-                type="checkbox"
-                value={2}
-                checked={formData.categories.includes(2)}
-                onChange={handleCategoryChange}
-              />
-              <span>Python</span>
-            </label>
-
-            <label className="checkbox-item">
-              <input
-                type="checkbox"
-                value={3}
-                checked={formData.categories.includes(3)}
-                onChange={handleCategoryChange}
-              />
-              <span>DevOps</span>
-            </label>
-
-            <label className="checkbox-item">
-              <input
-                type="checkbox"
-                value={4}
-                checked={formData.categories.includes(4)}
-                onChange={handleCategoryChange}
-              />
-              <span>SQL</span>
-            </label>
-          </div>
-        </div> */}
-
         {CATEGORY_OPTIONS.map((category, index) => (
           <label key={index} className="checkbox-item">
             <input
               type="checkbox"
               value={index + 1}
               checked={formData.categories.includes(index + 1)}
-              onChange={handleCategoryChange}
+              onChange={() => handleCategoryChange(index + 1)}
             />
             <span>{category}</span>
           </label>
@@ -195,6 +99,6 @@ const CreatePostForm = () => {
       </form>
     </section>
   )
-}
+})
 
 export default CreatePostForm

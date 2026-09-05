@@ -1,39 +1,28 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 import { useParams } from 'react-router-dom'
-import { useState, useEffect } from 'react'
-import { BASE_URL, authHeaders } from '../api'
+import { useEffect } from 'react'
+import { observer } from 'mobx-react-lite'
+import { useStore } from '../StoreProvide'
 import './index.css'
 
-const PostDetails = () => {
+const PostDetails = observer(() => {
   const { id } = useParams()
-  const [post, setPostData] = useState()
+  const {
+    store: { postDetailsStore },
+  } = useStore()
 
-  const fetchDetails = async () => {
-    try {
-      const response = await fetch(`${BASE_URL}/posts/${id}/`, {
-        headers: authHeaders(),
-      })
-      const data = await response.json()
-      console.log(data)
-      setPostData(data)
-    } catch (error) {
-      console.log(error)
-    }
-  }
+  const { post, error, fetchDetails } = postDetailsStore
 
   useEffect(() => {
-    fetchDetails()
-  }, [id])
+    fetchDetails(id)
+  }, [id, fetchDetails])
 
   if (!post) {
     return (
       <main className="detail-page">
-        <p className="empty-state">Loading...</p>
+        <p className="empty-state">{error || 'Loading...'}</p>
       </main>
     )
   }
-
-  console.log(post)
 
   return (
     <main className="detail-page">
@@ -60,6 +49,6 @@ const PostDetails = () => {
       </article>
     </main>
   )
-}
+})
 
 export default PostDetails

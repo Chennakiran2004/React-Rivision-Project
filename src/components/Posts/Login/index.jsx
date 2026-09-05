@@ -1,47 +1,20 @@
-import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { BASE_URL, authHeaders } from '../api'
+import { useStore } from '../StoreProvide'
+import { observer } from 'mobx-react-lite'
 
-const Login = () => {
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
-  const [isSubmitting, setIsSubmitting] = useState(false)
+const Login = observer(() => {
+  const {
+    store: { loginStore },
+  } = useStore()
+
+  const { login, error, isSubmitting, username, password, setUsername, setPassword } = loginStore
 
   const navigate = useNavigate()
 
   const handleLogin = async (event) => {
     event.preventDefault()
-    setError('')
-    setIsSubmitting(true)
-
-    const loginData = {
-      username: username,
-      password: password,
-    }
-
-    try {
-      const response = await fetch(`${BASE_URL}/token/`, {
-        method: 'POST',
-        headers: authHeaders(),
-        body: JSON.stringify(loginData),
-      })
-
-      if (!response.ok) {
-        setError('Those credentials did not match. Please try again.')
-        return
-      }
-
-      const data = await response.json()
-      localStorage.setItem('access', data.access)
-      localStorage.setItem('refresh', data.refresh)
-      navigate('/', { replace: true })
-    } catch (loginError) {
-      console.error('Error during login:', loginError)
-      setError('Could not reach the server. Please try again later.')
-    } finally {
-      setIsSubmitting(false)
-    }
+    login()
+    navigate('/', { replace: true })
   }
 
   return (
@@ -97,6 +70,6 @@ const Login = () => {
       </section>
     </main>
   )
-}
+})
 
 export default Login

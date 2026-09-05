@@ -1,7 +1,6 @@
 import { useNavigate } from 'react-router-dom'
-// import { useState } from 'react'
-import { BASE_URL } from '../api'
 import './index.css'
+import { useStore } from '../StoreProvide'
 
 const formatDate = (value) => {
   if (!value) return 'Recently'
@@ -21,7 +20,14 @@ const formatStatus = (status) => {
   return status.charAt(0).toUpperCase() + status.slice(1)
 }
 
-const PostCard = ({ post, setPostsData }) => {
+const PostCard = ({ post }) => {
+  // const { postStore } = useStore()
+  const {
+    store: { postStore },
+  } = useStore()
+
+  const { removePost } = postStore
+
   const navigate = useNavigate()
 
   const handleCardClick = (id) => {
@@ -30,20 +36,7 @@ const PostCard = ({ post, setPostsData }) => {
 
   const handleDelete = async (event, id) => {
     event.stopPropagation()
-    try {
-      const response = await fetch(`${BASE_URL}/posts/${id}/`, {
-        method: 'DELETE',
-      })
-
-      console.log(response)
-      //   const data = response.json()
-      console.log('Deleted')
-      //   setPostsData((prev) => [...prev, data])
-      setPostsData((prev) => prev.filter((item) => item.id !== id))
-      //   navigate('/')
-    } catch (error) {
-      console.log(error)
-    }
+    removePost(id)
   }
 
   const handleEdit = (event, id) => {
