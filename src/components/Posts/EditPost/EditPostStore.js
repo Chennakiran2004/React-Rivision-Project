@@ -1,5 +1,5 @@
 import { makeAutoObservable } from 'mobx'
-import { BASE_URL, authHeaders } from '../api'
+import { BASE_URL, authHeaders, authorizedFetch } from '../api'
 
 const INITIAL_FORM_DATA = {
   title: '',
@@ -33,7 +33,7 @@ class EditPostStore {
     this.isLoading = true
 
     try {
-      const response = await fetch(`${BASE_URL}/posts/${id}/`, {
+      const response = await authorizedFetch(`${BASE_URL}/posts/${id}/`, {
         headers: authHeaders(),
       })
 
@@ -55,7 +55,7 @@ class EditPostStore {
 
   submit = async (id, navigate) => {
     try {
-      const response = await fetch(`${BASE_URL}/posts/${id}/`, {
+      const response = await authorizedFetch(`${BASE_URL}/posts/${id}/`, {
         method: 'PUT',
         headers: authHeaders(),
         body: JSON.stringify(this.formData),

@@ -1,5 +1,5 @@
 import { makeAutoObservable } from 'mobx'
-import { BASE_URL, authHeaders } from '../api'
+import { BASE_URL, authHeaders, authorizedFetch } from '../api'
 
 class PostDetailsStore {
   post = null
@@ -11,7 +11,7 @@ class PostDetailsStore {
 
   fetchDetails = async (id) => {
     try {
-      const response = await fetch(`${BASE_URL}/posts/${id}/`, {
+      const response = await authorizedFetch(`${BASE_URL}/posts/${id}/`, {
         headers: authHeaders(),
       })
       const data = await response.json()

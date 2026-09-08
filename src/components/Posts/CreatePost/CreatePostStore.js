@@ -1,5 +1,5 @@
 import { makeAutoObservable } from 'mobx'
-import { authHeaders, BASE_URL } from '../api'
+import { authHeaders, authorizedFetch, BASE_URL } from '../api'
 
 const INITIAL_FORM_DATA = {
   title: '',
@@ -35,7 +35,7 @@ class CreatePostStore {
 
   submit = async () => {
     try {
-      const response = await fetch(`${BASE_URL}/posts/`, {
+      const response = await authorizedFetch(`${BASE_URL}/posts/`, {
         method: 'POST',
         headers: authHeaders(),
         body: JSON.stringify(this.formData),

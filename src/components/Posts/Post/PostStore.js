@@ -1,5 +1,5 @@
 import { makeAutoObservable } from 'mobx'
-import { BASE_URL, authHeaders } from '../api'
+import { BASE_URL, authHeaders, authorizedFetch } from '../api'
 import { VIEW_STATUS } from '../categories'
 
 const PAGE_SIZE = 10
@@ -35,7 +35,7 @@ class PostStore {
 
   removePost = async (id) => {
     try {
-      const response = await fetch(`${BASE_URL}/posts/${id}/`, {
+      const response = await authorizedFetch(`${BASE_URL}/posts/${id}/`, {
         method: 'DELETE',
         headers: authHeaders(),
       })
@@ -60,7 +60,7 @@ class PostStore {
         url += `&search=${this.searchValue}`
       }
 
-      const response = await fetch(url, {
+      const response = await authorizedFetch(url, {
         method: 'GET',
         headers: authHeaders(),
       })

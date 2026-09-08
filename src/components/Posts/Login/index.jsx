@@ -13,8 +13,8 @@ const Login = observer(() => {
 
   const handleLogin = async (event) => {
     event.preventDefault()
-    login()
-    navigate('/', { replace: true })
+    await login()
+    if (!error) navigate('/', { replace: true })
   }
 
   return (

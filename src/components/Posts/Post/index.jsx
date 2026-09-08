@@ -10,6 +10,8 @@ import { logout } from '../api'
 
 import { useNavigate } from 'react-router-dom'
 
+const PAGE_SIZE = 10
+
 const Posts = observer(() => {
   const {
     store: { postStore },
@@ -25,6 +27,7 @@ const Posts = observer(() => {
     page,
     searchValue,
     error,
+    totalCount,
   } = postStore
 
   const navigate = useNavigate()
@@ -74,7 +77,7 @@ const Posts = observer(() => {
     navigate('/login')
   }
 
-  const totalPosts = Array.isArray(postsData) ? postsData.length : 0
+  const totalPosts = Math.ceil(totalCount / PAGE_SIZE)
 
   const handleClickNext = () => {
     goToNextPage()

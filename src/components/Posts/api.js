@@ -13,3 +13,14 @@ export const logout = () => {
   localStorage.removeItem('access')
   localStorage.removeItem('refresh')
 }
+
+export const authorizedFetch = async (url, options = {}) => {
+  const response = await fetch(url, options)
+
+  if (response.status === 401 || response.status === 403) {
+    logout()
+    window.location.assign('/login')
+  }
+
+  return response
+}

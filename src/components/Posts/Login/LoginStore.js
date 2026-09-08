@@ -43,6 +43,7 @@ class LoginStore {
       const data = await response.json()
       localStorage.setItem('access', data.access)
       localStorage.setItem('refresh', data.refresh)
+      this.isSubmitting = false
     } catch (loginError) {
       console.error('Error during login:', loginError)
       this.error = 'Could not reach the server. Please try again later.'
