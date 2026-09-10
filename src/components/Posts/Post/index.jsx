@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import PostCard from '../Card'
 import '../index.css'
 import Pagination from '../../Pagination'
@@ -9,6 +9,7 @@ import { VIEW_STATUS } from '../categories'
 import { logout } from '../api'
 
 import { useNavigate } from 'react-router-dom'
+import Modal from '../Modal.jsx/index'
 
 const PAGE_SIZE = 10
 
@@ -31,6 +32,8 @@ const Posts = observer(() => {
   } = postStore
 
   const navigate = useNavigate()
+
+  const [isLogoutModelOpen, setIsLogoutModelOpen] = useState(false)
 
   useEffect(() => {
     const debounce = setTimeout(() => {
@@ -73,6 +76,14 @@ const Posts = observer(() => {
   }
 
   const onClickLogout = () => {
+    setIsLogoutModelOpen(true)
+  }
+
+  const cancelLogout = () => {
+    setIsLogoutModelOpen(false)
+  }
+
+  const confirmLogout = () => {
     logout()
     navigate('/login')
   }
@@ -138,6 +149,15 @@ const Posts = observer(() => {
             totalPages={totalPosts}
             handleClickNext={handleClickNext}
             handleClickPrev={handleClickPrev}
+          />
+        )}
+
+        {isLogoutModelOpen && (
+          <Modal
+            title="Logout"
+            message="You'll need to sign in again to see your posts."
+            onConfirm={confirmLogout}
+            onCancel={cancelLogout}
           />
         )}
       </section>
